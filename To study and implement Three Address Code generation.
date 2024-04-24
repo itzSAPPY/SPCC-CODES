@@ -1,0 +1,58 @@
+#To study and implement Three Address Code generation. 
+class TACGenerator:
+    def __init__(self):
+        self.code = []  
+        self.temp_count = 0  
+    
+    def new_temp(self):
+        self.temp_count += 1
+        return f"t{self.temp_count}"
+    
+    def gen(self, op, arg1=None, arg2=None, result=None):
+        if isinstance(arg1, int):
+            arg1 = str(arg1)
+        if isinstance(arg2, int):
+            arg2 = str(arg2)
+        
+        if result is None:
+            result = self.new_temp()
+
+        if arg1 is None and arg2 is None:
+            self.code.append([op, '', '', result])
+        elif arg2 is None:
+            self.code.append([op, arg1, '', result])
+        else:
+            self.code.append([op, arg1, arg2, result])
+    
+    def display_code(self):
+        print("Three Address Code:")
+        print("| Op   | Arg1  | Arg2  | Result  |")
+        print("|------|-------|-------|---------|")
+        for line in self.code:
+            op, arg1, arg2, result = line
+            print(f"| {op:<4} | {arg1:<5} | {arg2:<5} | {result:<7} |")
+
+
+tac = TACGenerator()
+
+a = "a"
+b = "b"
+c = "c"
+d = "d"
+
+temp1 = tac.new_temp()  
+temp2 = tac.new_temp() 
+
+tac.gen("+", a, b, temp1)  
+tac.gen("-", c, d, temp2)  
+tac.gen("*", temp1, temp2, "result")  
+
+tac.display_code()
+
+OUTPUT
+Three Address Code:
+| Op   | Arg1  | Arg2  | Result  |
+|------|-------|-------|---------|
+| +    | a     | b     | t1      |
+| -    | c     | d     | t2      |
+| *    | t1    | t2    | result  |
