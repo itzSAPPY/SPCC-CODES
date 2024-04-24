@@ -1,0 +1,99 @@
+#TO IMPLEMENT ANY ONE PARSER (LL1, SLR, LALR, OP ).
+def print_rules():
+    print("Production Rules:")
+    for non_terminal in rules:
+        productions = " | ".join(["".join(prod) for prod in rules[non_terminal]])
+        print(f"{non_terminal} -> {productions}")
+
+def compute_firsts():
+    for non_terminal in rules:
+        firsts[non_terminal] = set()
+    
+    for non_terminal in rules:
+        compute_first_for_non_terminal(non_terminal)
+
+def compute_first_for_non_terminal(non_terminal):
+    for production in rules[non_terminal]:
+        for symbol in production:
+            if symbol in terminals:
+                firsts[non_terminal].add(symbol)  
+                break
+            elif symbol in non_terminals:
+                if symbol == non_terminal:
+                    continue  
+                if not firsts[symbol]:  
+                    compute_first_for_non_terminal(symbol)
+                firsts[non_terminal] |= firsts[symbol] - set(['#'])
+                if '#' in firsts[symbol]:
+                    continue  
+                break  
+        if '#' in production:  
+            firsts[non_terminal].add('#')
+
+def compute_follows():
+    for non_terminal in rules:
+        follows[non_terminal] = set()
+    
+    follows[start_symbol] = set(['$'])  
+    changed = True
+    
+    while changed:
+        changed = False
+        for lhs in rules:
+            for production in rules[lhs]:
+                trailer = follows[lhs].copy()  
+                for symbol in reversed(production):
+                    if symbol in non_terminals:
+                        if not follows[symbol].issuperset(trailer):
+                            follows[symbol] |= trailer
+                            changed = True  
+                        if '#' in firsts[symbol]:
+                            trailer |= firsts[symbol] - set(['#'])
+                        else:
+                            trailer = firsts[symbol]
+                    else:
+                        trailer = set([symbol]) 
+
+rules = {
+    "S": [["A", "k", "O"]],
+    "A": [["A", "d"], ["a", "B"], ["a", "C"]],
+    "C": [["c"]],
+    "B": [["b", "B", "C"], ["r"]],
+}
+
+non_terminals = ["S", "A", "B", "C"]
+terminals = ["k", "O", "d", "a", "c", "b", "r"]
+start_symbol = "S"
+firsts = {}
+follows = {}
+
+print_rules()
+compute_firsts()
+compute_follows()
+
+print("\nFirsts:")
+for non_terminal in firsts:
+    print(f"{non_terminal}: {firsts[non_terminal]}")
+
+print("\nFollows:")
+for non_terminal in follows:
+    print(f"{non_terminal}: {follows[non_terminal]}")
+
+OUTPUT
+Production Rules:
+S -> AkO
+A -> Ad | aB | aC
+C -> c
+B -> bBC | r
+
+Firsts:
+S: {'a', 'd'}
+A: {'a', 'd'}
+C: {'c'}
+B: {'b', 'r'}
+
+Follows:
+S: {'$'}
+A: {'k', 'd'}
+C: {'c', 'k', 'd'}
+B: {'k', 'c', 'd'}
