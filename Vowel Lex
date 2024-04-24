@@ -1,0 +1,18 @@
+import re
+
+# Define a regular expression pattern for vowels
+vowel_pattern = re.compile(r'[aeiouAEIOU]')
+
+# Test the lexer
+def test_lexer(data):
+    # Find all vowels in the input data
+    vowels = vowel_pattern.findall(data)
+    
+    # Print each found vowel
+    for vowel in vowels:
+        print("Vowel:", vowel)
+
+if __name__ == '__main__':
+    data = "Hello World"
+    print("Input:", data)
+    test_lexer(data)
