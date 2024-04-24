@@ -1,0 +1,56 @@
+#To implement Lexical Analyzer programs (operators)
+arithmetic_operators = {'+', '-', '*', '/', '%'}
+relational_operators = {'==', '!=', '>', '<', '>=', '<='}
+logical_operators = {'and', 'or', 'not'}
+assignment_operators = {'=', '+=', '-=', '*=', '/='}
+def get_operator_type(operator):
+    if operator in arithmetic_operators:
+        return "Arithmetic Operator"
+    elif operator in relational_operators:
+        return "Relational Operator"
+    elif operator in logical_operators:
+        return "Logical Operator"
+    elif operator in assignment_operators:
+        return "Assignment Operator"
+    return "Unknown Operator"
+def tokenize_and_classify(input_str):
+    import re
+    # Regex pattern for identifying operators and other tokens
+    tokens = re.findall(r'[+\-*/%==!<>=]+|and|or|not|\w+|[^\w\s]', input_str)
+    analysis = {}
+    for token in tokens:
+        if token in arithmetic_operators or token in relational_operators or token in logical_operators or token in assignment_operators:
+            operator_type = get_operator_type(token)
+            analysis[token] = operator_type
+        else:
+            analysis[token] = "Other"
+    return analysis
+if __name__ == "__main__":
+    # Get user-defined code snippet
+    code_snippet = input("Enter the code snippet to analyze for operators: ")
+    analysis = tokenize_and_classify(code_snippet)
+    print("\nOperator analysis:")
+    for token, category in analysis.items():
+        print(f"{token}: {category}")
+OUTPUT:
+Enter the code snippet to analyze for operators:  a += 5 * (b - c) if a > 10 and b != c else: a = 0
+
+Operator analysis:
+a: Other
++=: Assignment Operator
+5: Other
+*: Arithmetic Operator
+(: Other
+b: Other
+-: Arithmetic Operator
+c: Other
+): Other
+if: Other
+>: Relational Operator
+10: Other
+and: Logical Operator
+!=: Relational Operator
+else: Other
+:: Other
+=: Assignment Operator
+0: Other
