@@ -1,1 +1,55 @@
-# SPCC-CODES
+# To implement Lexical Analyzer programs (identifier, keywords)
+def is_keyword(token, keyword_set):
+    return token in keyword_set
+def is_identifier(token, keyword_set):
+    if not token:
+        return False
+    if not (token[0].isalpha() or token[0] == '_'):
+        return False
+    for char in token[1:]:
+        if not (char.isalnum() or char == '_'):
+            return False
+    return not is_keyword(token, keyword_set)  # Identifiers shouldn't be keywords
+def tokenize(input_str):
+    import re
+    # Split by whitespace and special characters, but keep them in the list
+    tokens = re.findall(r'\w+|[^\w\s]', input_str)
+    return tokens
+def lexical_analyzer(input_str, keyword_set):
+    tokens = tokenize(input_str)
+    analysis = {}
+    for token in tokens:
+        if is_keyword(token, keyword_set):
+            analysis[token] = "Keyword"
+        elif is_identifier(token, keyword_set):
+            analysis[token] = "Identifier"
+        else:
+            analysis[token] = "Unknown"
+    return analysis
+if __name__ == "__main__":
+    # Get user-defined keywords
+    keyword_input = input("Enter the keywords, separated by commas: ")
+    keywords = set(map(str.strip, keyword_input.split(',')))
+    code_snippet = input("Enter the code snippet to analyze: ")
+    analysis = lexical_analyzer(code_snippet, keywords)
+    print("\nToken analysis:")
+    for token, category in analysis.items():
+        print(f"{token}: {category}")
+
+OUTPUT
+Enter the keywords, separated by commas:  def, return, if, else, while
+Enter the code snippet to analyze:  def foo(x): if x > 10: return x else: return 0
+
+Token analysis:
+def: Keyword
+foo: Identifier
+(: Unknown
+x: Identifier
+): Unknown
+:: Unknown
+if: Keyword
+>: Unknown
+10: Unknown
+return: Keyword
+else: Keyword
+0: Unknown
