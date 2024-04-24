@@ -1,0 +1,45 @@
+#Write a program to remove left recursion by direct method for given set of production rules
+def remove_left_recursion(rules):
+    new_rules = {}
+    
+    for non_terminal in rules:
+        alpha = []  
+        beta = []   
+        
+        for production in rules[non_terminal]:
+            if production[0] == non_terminal:
+                alpha.append(production[1:])
+            else:
+                beta.append(production)
+        
+        if alpha:
+            new_non_terminal = f"{non_terminal}'"
+            new_beta = [b + [new_non_terminal] for b in beta]
+            new_alpha = [a + [new_non_terminal] for a in alpha]
+            new_alpha.append(['ε'])  
+            
+            new_rules[non_terminal] = new_beta
+            new_rules[new_non_terminal] = new_alpha
+        else:
+            new_rules[non_terminal] = beta
+    
+    return new_rules
+
+def print_production_rules(rules):
+    for non_terminal, productions in rules.items():
+        production_strings = [' '.join(prod) for prod in productions]
+        print(f"{non_terminal} -> {' | '.join(production_strings)}")
+
+original_rules = {
+    'A': [['A', 'x'], ['A', 'y'], ['a'], ['b']]
+}
+
+new_rules = remove_left_recursion(original_rules)
+
+print("Production rules after removing left recursion:")
+print_production_rules(new_rules)
+
+OUTPUT: 
+Production rules after removing left recursion:
+A -> a A' | b A'
+A' -> x A' | y A' | ε
